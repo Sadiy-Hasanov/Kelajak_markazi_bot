@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kelajak Markazi - Arizalar Qabuli</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+        }
+
+        /* Animated Glowing Orbs Background */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .orb-1 {
+            width: 280px;
+            height: 280px;
+            background: rgba(99, 102, 241, 0.35);
+            top: -50px;
+            left: -50px;
+            animation: float 8s ease-in-out infinite alternate;
+        }
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: rgba(217, 70, 239, 0.25);
+            bottom: -80px;
+            right: -50px;
+            animation: float 10s ease-in-out infinite alternate-reverse;
+        }
+        .orb-3 {
+            width: 220px;
+            height: 220px;
+            background: rgba(14, 165, 233, 0.25);
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: float 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(20px) scale(1.08); }
+            100% { transform: translateY(-15px) scale(0.95); }
+        }
+
+        /* Glassmorphism card styles */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .glass-input {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-input:focus {
+            background: rgba(15, 23, 42, 0.85);
+            border-color: #818cf8;
+            box-shadow: 0 0 15px rgba(129, 140, 248, 0.3);
+            outline: none;
+        }
+
+        /* Success Pulse Animation */
+        @keyframes checkmarkPop {
+            0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+            70% { transform: scale(1.2) rotate(0deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .animate-pop {
+            animation: checkmarkPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 flex items-center justify-center min-h-screen relative overflow-x-hidden">
+
+    <!-- Background Orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <main class="w-full max-w-lg relative z-10 my-auto">
+        
+        <!-- Header / Logo -->
+        <div class="text-center mb-6">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 shadow-lg shadow-indigo-500/30 mb-3 border border-white/20">
+                <i class="fa-solid fa-rocket text-2xl text-white"></i>
+            </div>
+            <h1 class="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-100 to-indigo-300">
+                KELAJAK MARKAZI
+            </h1>
+            <p class="text-xs text-indigo-200/80 mt-1">Zamonaviy kasblar va texnologiyalar akademiyasi</p>
+        </div>
+
+        <!-- FORM CARD -->
+        <div id="registrationFormCard" class="glass-card rounded-3xl p-6 transition-all duration-500">
+            <div class="border-b border-white/10 pb-4 mb-5 flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold text-white">Abituriyent Anketasi</h2>
+                    <p class="text-xs text-slate-400">Barcha maydonlarni to'liq toldiring</p>
+                </div>
+                <span class="px-2.5 py-1 text-[10px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-full">
+                    2026 Qabul
+                </span>
+            </div>
+
+            <form id="enrollmentForm" class="space-y-4" onsubmit="handleFormSubmit(event)">
+                
+                <!-- Ism-Familiya -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">
+                        <i class="fa-regular fa-user mr-1 text-indigo-400"></i> F.I.Sh. (To'liq ismingiz)
+                    </label>
+                    <input type="text" id="fullName" required placeholder="Masalan: Anvar Alimov"
+                           class="glass-input w-full px-4 py-3 rounded-xl text-sm focus:ring-0">
+                </div>
+
+                <!-- Telefon Raqam -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">
+                        <i class="fa-solid fa-phone mr-1 text-indigo-400"></i> Telefon raqamingiz
+                    </label>
+                    <input type="tel" id="phoneNumber" required placeholder="+998 90 123 45 67" value="+998 "
+                           class="glass-input w-full px-4 py-3 rounded-xl text-sm focus:ring-0">
+                </div>
+
+                <!-- Viloyat Selection -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">
+                        <i class="fa-solid fa-location-dot mr-1 text-indigo-400"></i> Viloyatingiz
+                    </label>
+                    <select id="regionSelect" required onchange="updateDistricts()"
+                            class="glass-input w-full px-4 py-3 rounded-xl text-sm focus:ring-0 appearance-none cursor-pointer">
+                        <option value="" disabled selected class="bg-slate-900 text-slate-400">Viloyatni tanlang</option>
+                    </select>
+                </div>
+
+                <!-- Tuman/Shahar Selection -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">
+                        <i class="fa-solid fa-map-pin mr-1 text-indigo-400"></i> Tuman / Shahar
+                    </label>
+                    <select id="districtSelect" required disabled
+                            class="glass-input w-full px-4 py-3 rounded-xl text-sm focus:ring-0 appearance-none cursor-pointer disabled:opacity-50">
+                        <option value="" disabled selected class="bg-slate-900 text-slate-400">Avval viloyatni tanlang</option>
+                    </select>
+                </div>
+                <!-- Kurs Yonalishi -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">
+                        <i class="fa-solid fa-laptop-code mr-1 text-indigo-400"></i> Ta'lim yo'nalishi
+                    </label>
+                    <select id="courseSelect" required
+                            class="glass-input w-full px-4 py-3 rounded-xl text-sm focus:ring-0 appearance-none cursor-pointer">
+                        <option value="" disabled selected class="bg-slate-900 text-slate-400">Yo'nalishni tanlang</option>
+                        <option value="Yosh dasturchi Python" class="bg-slate-900 text-white">🐍 Yosh dasturchi (Python)</option>
+                        <option value="Sun'iy intellekt" class="bg-slate-900 text-white">🤖 Sun'iy intellekt (AI & Machine Learning)</option>
+                        <option value="Robototexnika" class="bg-slate-900 text-white">⚙️ Robototexnika va Mekatronika</option>
+                        <option value="Kompyuter muhandisi" class="bg-slate-900 text-white">💻 Kompyuter muhandisligi va Tizimlar</option>
+                        <option value="Aviamodel" class="bg-slate-900 text-white">✈️ Aviamodellashtirish va Dronlar</option>
+                        <option value="3D Modellashtirish" class="bg-slate-900 text-white">🎨 3D Modellashtirish va Grafika</option>
+                        <option value="Web Dasturlash (Full-Stack)" class="bg-slate-900 text-white">🌐 Web Dasturlash (Full-Stack)</option>
+                        <option value="Kiberxavfsizlik" class="bg-slate-900 text-white">🛡️ Kiberxavfsizlik va Tarmoqlar</option>
+                    </select>
+                </div>
+
+                <!-- Ta'lim shakli -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">
+                        <i class="fa-solid fa-clock mr-1 text-indigo-400"></i> Qulay ta'lim vaqti
+                    </label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="glass-input p-3 rounded-xl flex items-center cursor-pointer hover:bg-white/10 transition-colors">
+                            <input type="radio" name="shift" value="Ertalabki" checked class="accent-indigo-500">
+                            <span class="text-xs text-slate-200 ml-2">Ertalabki smena</span>
+                        </label>
+                        <label class="glass-input p-3 rounded-xl flex items-center cursor-pointer hover:bg-white/10 transition-colors">
+                            <input type="radio" name="shift" value="Kechki" class="accent-indigo-500">
+                            <span class="text-xs text-slate-200 ml-2">Kechki smena</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-2">
+                    <button type="submit" id="submitBtn"
+                            class="w-full py-3.5 px-6 rounded-xl font-semibold text-sm text-white bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-lg shadow-indigo-500/25 transition-all duration-300 flex items-center justify-center space-x-2 active:scale-95">
+                        <span>Arizangizni yuborish</span>
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- SUCCESS CARD (Initially hidden) -->
+        <div id="successCard" class="glass-card rounded-3xl p-8 text-center transition-all duration-500 hidden transform scale-95 opacity-0">
+            <!-- Animated Icon Circle -->
+            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-emerald-400 to-teal-500 mx-auto flex items-center justify-center shadow-lg shadow-emerald-500/40 mb-6 border-2 border-white/30 animate-pop">
+                <i class="fa-solid fa-check text-4xl text-white"></i>
+            </div>
+
+            <!-- Success Heading -->
+            <h2 class="text-2xl font-extrabold text-white mb-3 tracking-tight">
+                Arizangiz muvaffaqiyatli qabul qilindi! ✨
+            </h2>
+
+            <!-- Message details -->
+            <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                Katta raqamli kelajak sari birinchi qadamni tashladingiz. Tez orada mutaxassislarimiz ko'rsatilgan telefon raqami orqali siz bilan bog'lanishadi.
+            </p>
+
+            <!-- Details Summary Box -->
+            <div id="summaryBox" class="bg-slate-900/60 border border-white/10 rounded-2xl p-4 text-left mb-6 text-xs space-y-2">
+                <div class="flex justify-between border-b border-white/5 pb-1.5">
+                    <span class="text-slate-400">Ariza egasi:</span>
+                    <span id="sumName" class="font-medium text-indigo-300">...</span>
+                </div>
+                <div class="flex justify-between border-b border-white/5 pb-1.5">
+                    <span class="text-slate-400">Telefon:</span>
+                    <span id="sumPhone" class="font-medium text-slate-200">...</span>
+                </div>
+                <div class="flex justify-between border-b border-white/5 pb-1.5">
+                    <span class="text-slate-400">Hudud:</span>
+                    <span id="sumLocation" class="font-medium text-slate-200">...</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Tanlangan yo'nalish:</span>
+                    <span id="sumCourse" class="font-medium text-pink-300">...</span>
+                </div>
+            </div>
+
+            <!-- Actions buttons -->
+            <div class="space-y-3">
+                <button onclick="closeTelegramApp()" 
+                        class="w-full py-3.5 px-6 rounded-xl font-semibold text-sm text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:opacity-95 shadow-lg shadow-emerald-500/25 transition-all duration-300 flex items-center justify-center space-x-2 active:scale-95">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                    <span>Ilovani yopish</span>
+                </button>
+
+                <button onclick="resetForm()" 
+                        class="w-full py-2.5 px-4 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-200">
+                    <i class="fa-solid fa-arrows-rotate mr-1"></i> Yangi ariza topshirish
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer Info -->
+        <footer class="mt-6 text-center text-slate-400 text-[11px] flex items-center justify-center space-x-2">
+            <span>&copy; 2026 Kelajak Markazi</span>
+            <span>•</span>
+            <span class="text-indigo-400"><i class="fa-solid fa-shield-halved mr-1"></i> Xavfsiz tizim</span>
+        </footer>
+
+    </main>
+
+    <script>
+        // Telegram WebApp Object Initialization
+        let tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.expand();
+            tg.ready();
+            // Set Telegram WebApp header color if supported
+            if (tg.setHeaderColor) tg.setHeaderColor('#0f172a');
+        }
+
+        // Complete Uzbekistan Regions and Districts Data
+        const uzbRegionsData = {
+            "Toshkent shahri": ["Olmzor", "Yunusobod", "Yakkasaroy", "Mirzo Ulug'bek", "Chilonzor", "Yashnobod", "Mirobod", "Uchtepa", "Shayxontohur", "Sergeli", "Yangihayot", "Bektemir"],
+            "Toshkent viloyati": ["Angren sh.", "Olmaliq sh.", "Chirchiq sh.", "Bo'stonliq", "Zangiota", "Qibray", "Parkent", "Yangiyo'l", "Chinoz", "Oqqurg'on", "Bekobod", "Piskent"],
+            "Farg'ona viloyati": ["Farg'ona sh.", "Qo'qon sh.", "Marg'ilon sh.", "Quvasoy sh.", "Bag'dod", "Beshariq", "Buvayda", "Dang'ara", "Quva", "Oltiariq", "Rishton", "Uchko'prik", "Toshloq", "Yozyovon", "Farg'ona t."],
+            "Andijon viloyati": ["Andijon sh.", "Xonobod sh.", "Asaka", "Baliqchi", "Bo'ston", "Buloqboshi", "Izboskan", "Jalaquduq", "Marhamat", "Oltinko'l", "Paxtaobod", "Ulug'nor", "Xo'jaobod", "Shahrixon"],
+            "Namangan viloyati": ["Namangan sh.", "Chortoq", "Chust", "Kosonsoy", "Mingbuloq", "Norin", "Pop", "To'raqo'rg'on", "Uchqo'rg me'yori", "Uychi", "Yangiqo'rg'on"],
+            "Samarqand viloyati": ["Samarqand sh.", "Kattaqo'rg'on sh.", "Bulung'ur", "Jomboy", "Ishtixon", "Kattaqo'rg'on t.", "Narpay", "Nurobod", "Oqdaryo", "Pastdarg'om", "Paxtachi", "Poyariq", "Samarqand t.", "Toyloq", "Urgut"],
+            "Buxoro viloyati": ["Buxoro sh.", "Kogon sh.", "Olot", "Buxoro t.", "Vobkent", "G'ijduvon", "Jondor", "Kogon t.", "Qorako'l", "Qorovulbozor", "Peshku", "Shofirkon"],
+            "Xorazm viloyati": ["Urganch sh.", "Xiva sh.", "Bog'ot", "Gurlan", "Qo'shko'pir", "Msho't", "Xazorasp", "Xonqa", "Xiva t.", "Shovot", "Yangiariq", "Yangibozor"],
+            "Qashqadaryo viloyati": ["Qarshi sh.", "Shahrisabz sh.", "Dehqonobod", "Kasbi", "Kitob", "Koson", "Mirishkor", "Muborak", "Nishon", "Kasbi", "Chiroqchi", "Shahrisabz t.", "Yakkabog'"],
+            "Surxondaryo viloyati": ["Termiz sh.", "Angor", "Bandixon", "Boysun", "Denov", "Jarqo'rg'on", "Qiziriq", "Qumqo'rg'on", "Muzrabot", "Sariosiyo", "Termiz t.", "Uzun", "Sherobod", "Shorchi"],
+            "Navoiy viloyati": ["Navoiy sh.", "Zarafshon sh.", "Konimex", "Karmana", "Qiziltepa", "Xatirchi", "Navbahor", "Nurota", "Tomdi", "Uchquduq"],
+            "Jizzax viloyati": ["Jizzax sh.", "Arnasoy", "Baxmal", "G'allaorol", "Do'stlik", "Zomin", "Zarbdor", "Zafarobod", "Mirzacho'l", "Paxtakor", "Forish", "Sharof Rashidov"],
+            "Sirdaryo viloyati": ["Guliston sh.", "Yangiyer sh.", "Shirin sh.", "Oqoltin", "Boyovut", "Guliston t.", "Xovos", "Mirzaobod", "Sardoba", "Sayxunobod"],
+            "Qoraqalpog'iston Respublika": ["Nukus sh.", "Amudaryo", "Beruniy", "Chimboy", "Ellikqala", "Kegeyli", "Mo'ynoq", "Nukus t.", "Qonliko'l", "Qorao'zak", "Taxtako'pir", "To'rtko'l", "Xo'jayli"]
+        };
+
+        // Populate Region Dropdown on Load
+        window.onload = function() {
+            const regionSelect = document.getElementById('regionSelect');
+            for (let region in uzbRegionsData) {
+                let opt = document.createElement('option');
+                opt.value = region;
+                opt.innerHTML = region;
+                opt.className = "bg-slate-900 text-white";
+                regionSelect.appendChild(opt);
+            }
+        };
+
+        // Update Districts based on selected Region
+        function updateDistricts() {
+            const regionSelect = document.getElementById('regionSelect');
+            const districtSelect = document.getElementById('districtSelect');
+            const selectedRegion = regionSelect.value;
+
+            districtSelect.innerHTML = '<option value="" disabled selected class="bg-slate-900 text-slate-400">Tuman / Shaharni tanlang</option>';
+
+            if (selectedRegion && uzbRegionsData[selectedRegion]) {
+                districtSelect.disabled = false;
+                uzbRegionsData[selectedRegion].forEach(function(district) {
+                    let opt = document.createElement('option');
+                    opt.value = district;
+                    opt.innerHTML = district;
+                    opt.className = "bg-slate-900 text-white";
+                    districtSelect.appendChild(opt);
+                });
+            } else {
+                districtSelect.disabled = true;
+            }
+        }
+// Handle Form Submission with smooth UI Switch
+function handleFormSubmit(event) {
+            event.preventDefault();
+
+            // Get Form Data
+            const fullName = document.getElementById('fullName').value.trim();
+            const phone = document.getElementById('phoneNumber').value.trim();
+            const region = document.getElementById('regionSelect').value;
+            const district = document.getElementById('districtSelect').value;
+            const course = document.getElementById('courseSelect').value;
+            const shift = document.querySelector('input[name="shift"]:checked')?.value || 'Ertalabki';
+
+            // Prepare Data Payload
+            const formData = {
+                fullName: fullName,
+                phone: phone,
+                region: region,
+                district: district,
+                course: course,
+                shift: shift,
+                submittedAt: new Date().toISOString()
+            };
+
+            // Send payload to Telegram Bot via WebApp API if opened inside Telegram
+            if (tg && tg.sendData) {
+                try {
+                    tg.sendData(JSON.stringify(formData));
+                } catch (e) {
+                    console.log("Telegram sendData triggered:", formData);
+                }
+            }
+
+            // Fill Summary Box in Success Card
+            document.getElementById('sumName').innerText = fullName;
+            document.getElementById('sumPhone').innerText = phone;
+            document.getElementById('sumLocation').innerText = '${region}, ${district}';
+            document.getElementById('sumCourse').innerText = '${course} (${shift})';
+
+            // Smooth UI Transition (Hide Form, Display Success Card)
+            const formCard = document.getElementById('registrationFormCard');
+            const successCard = document.getElementById('successCard');
+
+            formCard.classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => {
+                formCard.classList.add('hidden');
+                
+                successCard.classList.remove('hidden');
+                setTimeout(() => {
+                    successCard.classList.remove('scale-95', 'opacity-0');
+                    successCard.classList.add('scale-100', 'opacity-100');
+                }, 50);
+
+            }, 400);
+        }
+
+        // Reset form for new submission
+        function resetForm() {
+            const formCard = document.getElementById('registrationFormCard');
+            const successCard = document.getElementById('successCard');
+
+            document.getElementById('enrollmentForm').reset();
+            document.getElementById('districtSelect').disabled = true;
+
+            successCard.classList.remove('scale-100', 'opacity-100');
+            successCard.classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => {
+                successCard.classList.add('hidden');
+                
+                formCard.classList.remove('hidden');
+                setTimeout(() => {
+                    formCard.classList.remove('scale-95', 'opacity-0');
+                    formCard.classList.add('scale-100', 'opacity-100');
+                }, 50);
+
+            }, 400);
+        }
+
+        // Close Telegram Mini App safely
+        function closeTelegramApp() {
+            if (tg && tg.close) {
+                tg.close();
+            } else {
+                alert("Ilovani yopish uchun Telegram ichida oching.");
+            }
+        }
+    </script>
+</body>
+</html>
